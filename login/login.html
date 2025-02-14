@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        function updateTime() {
+          const now = new Date();
+          const days = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+          ];
+          const day = days[now.getDay()];
+          const date = now.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+
+          document.getElementById(
+            "current-time"
+          ).textContent = `${day}, ${date}`;
+        }
+        updateTime();
+        setInterval(updateTime, 1000 * 60); // Update every minute
+
+        // Login validation
+        const form = document.getElementById("login-form");
+        form.addEventListener("submit", (e) => {
+          e.preventDefault(); // Prevent form submission
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          // Validate credentials
+          if (email === "alviansyah" && password === "alviansyah12") {
+            window.location.href = "../dashboard/dashboard.html"; // Redirect to dashboard
+          } else {
+            alert("Invalid email or password. Please try again.");
+          }
+        });
+      });
+    </script>
+  </head>
+  <body class="min-h-screen flex flex-col bg-gray-100 font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-md py-3 mb-4">
+      <div class="container mx-auto flex items-center justify-between px-4">
+        <div class="flex items-center">
+          <img
+            src="../assets/images/logopr.png"
+            alt="Logo PR"
+            class="h-10 mr-4"
+          />
+        </div>
+        <div class="flex justify-end items-center w-full">
+          <div class="text-gray-500 text-sm" id="current-time"></div>
+          <div class="border-l border-gray-300 pl-3"></div>
+        </div>
+        <div class="flex items-center space-x-3">
+          <img
+            src="../assets/images/logomedia.jpeg"
+            alt="Logo Media"
+            class="h-10"
+          />
+          <a
+            href="#"
+            class="text-gray-700 font-semibold hover:text-blue-500 transition duration-300"
+          >
+            Network
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Login Form -->
+    <main class="flex-grow flex items-center justify-center bg-gray-100">
+      <div
+        class="login-container bg-white shadow-lg rounded-3xl p-6 w-full max-w-sm"
+      >
+        <img
+          src="../assets/images/logopr.png"
+          alt="Logo Pikiran Rakyat"
+          class="mx-auto h-12 mb-4"
+        />
+        <h2 class="text-xl font-bold text-center text-gray-800 mb-6">Login</h2>
+        <form id="login-form" class="space-y-4">
+          <!-- Input Email -->
+          <div>
+            <input
+              type="text"
+              id="email"
+              placeholder="Email"
+              class="w-full max-w-xs px-4 py-2 text-gray-700 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              required
+            />
+          </div>
+          <!-- Input Password -->
+          <div>
+            <input
+              type="password"
+              id="password"
+              placeholder="Password"
+              class="w-full max-w-xs px-4 py-2 text-gray-700 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              required
+            />
+          </div>
+          <!-- Remember Me -->
+          <div class="flex items-center justify-between">
+            <label class="flex items-center space-x-2 text-sm text-gray-600">
+              <input
+                type="checkbox"
+                class="text-blue-500 focus:ring-blue-500"
+              />
+              <span>Remember Me</span>
+            </label>
+            <a href="#" class="text-sm text-blue-600 hover:underline">
+              Forgot Password?
+            </a>
+          </div>
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="w-full max-w-xs bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 transition"
+          >
+            Login
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-4">
+      <div class="container mx-auto text-center">
+        <p class="text-xs text-gray-400">
+          © 2025
+          <span class="text-blue-400">Pikiran Rakyat Media Network</span>. All
+          Rights Reserved.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

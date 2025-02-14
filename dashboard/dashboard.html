@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Social Media Monitoring - December 2024</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        function updateTime() {
+          const now = new Date();
+          const days = [
+            "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+          ];
+          const day = days[now.getDay()];
+          const date = now.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+          document.getElementById("current-time").textContent = `${day}, ${date}`;
+        }
+        updateTime();
+        setInterval(updateTime, 1000 * 60); // Update every minute
+      });
+    </script>
+    <style>
+      .social-card:hover {
+        cursor: pointer;
+        background-color: #f0f8ff;
+      }
+
+      .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 175%;
+        right: 0;
+        background-color: white;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 200px;
+        z-index: 20;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        border-radius: 10px;
+      }
+
+      .dropdown-menu a {
+        display: block;
+        padding: 10px;
+        text-decoration: none;
+        color: #333;
+        font-size: 14px;
+      }
+
+      .dropdown-menu a:hover {
+        background-color: #f1f1f1;
+      }
+
+      .dropdown-menu::before {
+        content: "";
+        position: absolute;
+        top: -8px;
+        right: 10px;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 8px solid white;
+      }
+
+      /* Styling for modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+      }
+
+      .modal-header {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .modal-footer {
+        text-align: right;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 font-sans">
+    <header class="bg-white shadow-md py-3 relative">
+      <div class="container mx-auto flex items-center justify-between px-4">
+        <div class="flex items-center">
+          <img src="../assets/images/logopr.png" alt="Logo PR" class="h-10 mr-4" />
+        </div>
+        <div class="flex justify-end items-center w-full">
+          <div class="text-gray-500 text-sm" id="current-time"></div>
+          <div class="border-l border-gray-300 pl-3"></div>
+        </div>
+        <div class="flex items-center space-x-3">
+          <img src="../assets/images/logomedia.jpeg" alt="Logo Media" class="h-10" />
+          <a href="#" class="text-gray-700 font-semibold hover:text-blue-500 transition duration-300">
+            Network
+          </a>
+        </div>
+      </div>
+      <div class="absolute top-1/2 right-4 transform -translate-y-1/2">
+        <img src="../assets/images/profile.jpeg" alt="Profile Icon" class="h-8 w-8 rounded-full cursor-pointer" onclick="toggleDropdown()" />
+        <div id="dropdown-menu" class="dropdown-menu">
+          <a href="#" onclick="showProfile()">Profile</a>
+          <a href="#" onclick="showSettings()">Settings</a>
+          <a href="#" onclick="logOut()">Log Out</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">Profile</div>
+        <div class="modal-body">Here is your profile information...</div>
+        <div class="modal-footer">
+          <button onclick="closeModal('profileModal')" class="bg-blue-500 text-white px-4 py-2 rounded">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">Settings</div>
+        <div class="modal-body">Here you can adjust your settings...</div>
+        <div class="modal-footer">
+          <button onclick="closeModal('settingsModal')" class="bg-blue-500 text-white px-4 py-2 rounded">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleDropdown() {
+        const dropdownMenu = document.getElementById("dropdown-menu");
+        const isVisible = dropdownMenu.style.display === "block";
+
+        // Toggle display, opacity, and slide
+        dropdownMenu.style.display = isVisible ? "none" : "block";
+        dropdownMenu.style.opacity = isVisible ? "0" : "1";
+        dropdownMenu.style.transform = isVisible ? "translateY(10px)" : "translateY(0)";
+      }
+
+      function showProfile() {
+        closeDropdown(); // Close the dropdown
+        document.getElementById("profileModal").style.display = "flex";
+      }
+
+      function showSettings() {
+        closeDropdown(); // Close the dropdown
+        document.getElementById("settingsModal").style.display = "flex";
+      }
+
+      function logOut() {
+        closeDropdown(); // Close the dropdown
+        alert("You have been logged out.");
+        // Add actual logout functionality here, such as clearing session or redirecting
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+      }
+
+      function closeDropdown() {
+        const dropdownMenu = document.getElementById("dropdown-menu");
+        dropdownMenu.style.display = "none";
+        dropdownMenu.style.opacity = "0";
+        dropdownMenu.style.transform = "translateY(10px)";
+      }
+
+      window.addEventListener("click", function(event) {
+        const dropdownMenu = document.getElementById("dropdown-menu");
+        const profileIcon = document.querySelector("img[alt='Profile Icon']");
+        
+        // Close the dropdown if clicked outside
+        if (!profileIcon.contains(event.target) && !dropdownMenu.contains(event.target)) {
+          dropdownMenu.style.display = "none";
+          dropdownMenu.style.opacity = "0";
+          dropdownMenu.style.transform = "translateY(10px)";
+        }
+      });
+    </script>
+
+</body>
+
+
+    <div class="container mx-auto py-10 px-4">
+      <h1 class="text-3xl font-bold text-center mb-8">
+        Social Media Monitoring
+      </h1>
+      <div class="flex justify-center mb-8">
+        <div class="relative w-full max-w-md">
+          <input
+            type="text"
+            placeholder="Search..."
+            class="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            class="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-1 bg-[#2274b3] text-white rounded-full shadow hover:bg-[#09a2db] focus:outline-none focus:ring-2 focus:ring-[#0bb1ef]"
+          >
+            Search
+          </button>
+        </div>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div
+          class="bg-white p-4 rounded-lg shadow text-center social-card"
+          onclick="window.location.href='../sosialmedia/ig.html'"
+        >
+          <h2 class="text-gray-700 font-semibold">Instagram</h2>
+          <p class="text-2xl font-bold text-pink-500" id="instagram-views">0</p>
+        </div>
+        <div
+          class="bg-white p-4 rounded-lg shadow text-center social-card"
+          onclick="window.location.href='../sosialmedia/tiktok.html'"
+        >
+          <h2 class="text-gray-700 font-semibold">TikTok</h2>
+          <p class="text-2xl font-bold text-blue-500" id="tiktok-views">0</p>
+        </div>
+        <div
+          class="bg-white p-4 rounded-lg shadow text-center social-card"
+          onclick="window.location.href='../sosialmedia/fb.html'"
+        >
+          <h2 class="text-gray-700 font-semibold">Facebook</h2>
+          <p class="text-2xl font-bold text-blue-700" id="facebook-views">0</p>
+        </div>
+        <div
+          class="bg-white p-4 rounded-lg shadow text-center social-card"
+          onclick="window.location.href='../sosialmedia/yt.html'"
+        >
+          <h2 class="text-gray-700 font-semibold">YouTube</h2>
+          <p class="text-2xl font-bold text-red-500" id="youtube-views">0</p>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow mb-8 relative">
+        <!-- Left Navigation Icon (Outside Box) -->
+        <button
+          class="absolute top-1/2 left-[-70px] transform -translate-y-1/2 text-gray-500 hover:text-blue-500 border border-grey-400 rounded-full p-4 shadow-lg transition-all duration-300 transform hover:scale-110"
+          id="prevMonth"
+        >
+          <i class="fas fa-arrow-left fa-lg"></i>
+        </button>
+
+        <div class="flex-grow text-center">
+          <h2 class="text-xl font-bold mb-4" id="current-month">Desember</h2>
+          <canvas
+            id="views-chart"
+            style="height: 350px; max-height: 350px"
+          ></canvas>
+        </div>
+        
+
+        <!-- Right Navigation Icon -->
+        <button
+          class="absolute top-1/2 right-[-70px] transform -translate-y-1/2 text-gray-500 hover:text-blue-500 border border-grey-400 rounded-full p-4 shadow-lg transition-all duration-300 transform hover:scale-110"
+          id="nextMonth"
+        >
+          <i class="fas fa-arrow-right fa-lg"></i>
+        </button>
+      </div>
+      <script>
+        const monthData = {
+          "Desember 2024": {
+            labels: ["Minggu 1", "Minggu 2", "Minggu 3", "Minggu 4"],
+            datasets: {
+              Instagram: [7000, 8000, 7500, 8500],
+              TikTok: [5000, 6000, 5500, 6500],
+              Facebook: [4000, 5000, 4500, 5500],
+              YouTube: [8000, 9000, 9500, 10500],
+            },
+          },
+          "Januari 2025": {
+            labels: ["Minggu 1", "Minggu 2", "Minggu 3", "Minggu 4"],
+            datasets: {
+              Instagram: [5000, 6000, 7000, 8000],
+              TikTok: [4000, 5000, 4500, 5500],
+              Facebook: [3000, 4000, 3500, 4500],
+              YouTube: [6000, 7000, 7500, 8500],
+            },
+          },
+        };
+
+        let currentMonth = "Desember 2024";
+
+        function updateMonth(month) {
+          const { labels, datasets } = monthData[month];
+
+          // Update chart
+          const ctx = document.getElementById("views-chart").getContext("2d");
+          if (window.myChart) window.myChart.destroy();
+          window.myChart = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels,
+              datasets: [
+                {
+                  label: "Instagram",
+                  data: datasets.Instagram,
+                  borderColor: "#E1306C",
+                  backgroundColor: "rgba(225, 48, 108, 0.1)",
+                  fill: true,
+                },
+                {
+                  label: "TikTok",
+                  data: datasets.TikTok,
+                  borderColor: "#25F4EE",
+                  backgroundColor: "rgba(37, 244, 238, 0.1)",
+                  fill: true,
+                },
+                {
+                  label: "Facebook",
+                  data: datasets.Facebook,
+                  borderColor: "#1877F2",
+                  backgroundColor: "rgba(24, 119, 242, 0.1)",
+                  fill: true,
+                },
+                {
+                  label: "YouTube",
+                  data: datasets.YouTube,
+                  borderColor: "#FF0000",
+                  backgroundColor: "rgba(255, 0, 0, 0.1)",
+                  fill: true,
+                },
+              ],
+            },
+          });
+
+          // Update text
+          document.getElementById("current-month").textContent = month;
+          document.getElementById("instagram-views").textContent =
+            datasets.Instagram.reduce((a, b) => a + b, 0);
+          document.getElementById("tiktok-views").textContent =
+            datasets.TikTok.reduce((a, b) => a + b, 0);
+          document.getElementById("facebook-views").textContent =
+            datasets.Facebook.reduce((a, b) => a + b, 0);
+          document.getElementById("youtube-views").textContent =
+            datasets.YouTube.reduce((a, b) => a + b, 0);
+        }
+
+        document.getElementById("prevMonth").addEventListener("click", () => {
+          currentMonth =
+            currentMonth === "Desember 2024" ? "Januari 2025" : "Desember 2024";
+          updateMonth(currentMonth);
+        });
+
+        document.getElementById("nextMonth").addEventListener("click", () => {
+          currentMonth =
+            currentMonth === "Desember 2024" ? "Januari 2025" : "Desember 2024";
+          updateMonth(currentMonth);
+        });
+
+        // Initial render
+        updateMonth(currentMonth);
+      </script>
+
+      <!-- Summary Table -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-bold mb-4" id="summary-title">
+          Ringkasan Desember 2024
+        </h2>
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr>
+              <th class="border-b py-2 px-4 font-semibold text-gray-700">
+                Platform
+              </th>
+              <th class="border-b py-2 px-4 font-semibold text-gray-700">
+                Views
+              </th>
+              <th class="border-b py-2 px-4 font-semibold text-gray-700">
+                Growth (%)
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="border-b py-2 px-4">Instagram</td>
+              <td class="border-b py-2 px-4" id="instagram-views-summary">0</td>
+              <td class="border-b py-2 px-4" id="instagram-growth">0%</td>
+            </tr>
+            <tr>
+              <td class="border-b py-2 px-4">TikTok</td>
+              <td class="border-b py-2 px-4" id="tiktok-views-summary">0</td>
+              <td class="border-b py-2 px-4" id="tiktok-growth">0%</td>
+            </tr>
+            <tr>
+              <td class="border-b py-2 px-4">Facebook</td>
+              <td class="border-b py-2 px-4" id="facebook-views-summary">0</td>
+              <td class="border-b py-2 px-4" id="facebook-growth">0%</td>
+            </tr>
+            <tr>
+              <td class="border-b py-2 px-4">YouTube</td>
+              <td class="border-b py-2 px-4" id="youtube-views-summary">0</td>
+              <td class="border-b py-2 px-4" id="youtube-growth">0%</td>
+            </tr>
+            <tr>
+              <td class="font-bold border-b py-2 px-4">Total</td>
+              <td
+                class="border-b py-2 px-4 font-bold text-gray-700"
+                id="total-views"
+              >
+                0
+              </td>
+              <td
+                class="border-b py-2 px-4 font-bold text-gray-700"
+                id="total-growth"
+              >
+                0%
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <script>
+        const calculateGrowth = (current, previous) => {
+          if (previous === 0) return "N/A"; // Avoid division by zero
+          return `${(((current - previous) / previous) * 100).toFixed(2)}%`;
+        };
+
+        function updateSummaryTable(month) {
+          const { datasets } = monthData[month];
+          const previousMonth =
+            month === "Desember 2024" ? "Januari 2025" : "Desember 2024";
+          const previousDatasets = monthData[previousMonth].datasets;
+
+          // Update title
+          document.getElementById(
+            "summary-title"
+          ).textContent = `Ringkasan ${month}`;
+
+          // Update views and growth for each platform
+          const platforms = ["Instagram", "TikTok", "Facebook", "YouTube"];
+          let totalViews = 0;
+          let totalGrowth = 0;
+          let growthCount = 0;
+
+          platforms.forEach((platform) => {
+            const currentViews = datasets[platform].reduce((a, b) => a + b, 0);
+            const previousViews = previousDatasets[platform].reduce(
+              (a, b) => a + b,
+              0
+            );
+            const growth = calculateGrowth(currentViews, previousViews);
+
+            document.getElementById(
+              `${platform.toLowerCase()}-views-summary`
+            ).textContent = currentViews;
+            document.getElementById(
+              `${platform.toLowerCase()}-growth`
+            ).textContent = growth;
+
+            totalViews += currentViews;
+            if (growth !== "N/A") {
+              totalGrowth += parseFloat(growth);
+              growthCount++;
+            }
+          });
+
+          // Update total views and growth
+          document.getElementById("total-views").textContent = totalViews;
+          document.getElementById("total-growth").textContent =
+            growthCount > 0
+              ? `${(totalGrowth / growthCount).toFixed(2)}%`
+              : "N/A";
+        }
+
+        // Enhance existing updateMonth to include summary updates
+        const originalUpdateMonth = updateMonth;
+        updateMonth = (month) => {
+          originalUpdateMonth(month);
+          updateSummaryTable(month);
+        };
+
+        // Initial render for table and chart
+        updateSummaryTable(currentMonth);
+      </script>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-6">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-4">
+          <img
+            src="../assets/images/putih.png"
+            alt="Logo PR"
+            class="mx-auto h-20 mb-4"
+          />
+          <p class="text-sm">PT Kolaborasi Mediapreneur Nusantara</p>
+          <p class="text-sm">
+            Jl. Asia Afrika No. 75, Kota Bandung - Jawa Barat, 40111
+          </p>
+          <p class="text-sm">Telepon : 022-4241600 / 082115286103</p>
+          <p class="text-sm">
+            Email :
+            <a
+              href="mailto:prmnnewsroom@pikiran-rakyat.com"
+              class="text-blue-400 hover:underline"
+              >prmnnewsroom@pikiran-rakyat.com</a
+            >
+          </p>
+          <img
+            src="../assets/images/dewan.png"
+            alt="Dewan Pers"
+            class="mx-auto h-12 mt-2"
+          />
+        </div>
+        <div class="border-t border-gray-400 pt-4 mt-4">
+          <p class="text-center text-xs text-gray-400">
+            © 2025
+            <span class="text-blue-400">Pikiran Rakyat Media Network</span>. All
+            Rights Reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
